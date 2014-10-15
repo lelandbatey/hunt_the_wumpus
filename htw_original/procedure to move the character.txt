@@ -1,0 +1,19 @@
+Procedure for Moving the Character:
+	- Get new location of character
+	- Get if the move is good/bad
+	- Retrieve what's in the square you just moved into
+	- Evaluate points:
+		- Deduct 1 point for moving
+		- If move bad, deduct 1 additional point
+		- Check what's in the square you moved into:
+			- If it's a pit
+				- Deduct 10 points
+			- If it's a dead Wumpus
+				- If that square has not been visited before
+					- Add 50 points
+			- If it's a live Wumpus
+				- Deduct 500 points
+			- If it's a treasure
+				- If that square has not been visited before
+					- Add 100 points
+	- Draw the stack of sprites in the correct order

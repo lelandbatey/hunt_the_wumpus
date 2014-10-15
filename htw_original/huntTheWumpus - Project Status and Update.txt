@@ -1,0 +1,32 @@
+Leland Batey
+Computer Science 111
+November 18th, 2012
+WSU-TriCities
+	Hunt the Wumpus - Final Project
+	Current Status / Projected Status
+
+Currently, I have completed the following:
+	1. The user can select one of three difficulties
+	2. The game board will be correctly generated based on the users selected difficulty.
+		a. This functionality has been pretty thoroughly tests such that game objects are placed across the board evenly.
+		b. The "sense" data for each individual square is accuratley generated and stored as a text object for each individual game square.
+		c. The placement of game objects follows the specifications
+	3. The user will be initiallized in a square that is not occupied by either treasure, a Wumpus, or a pit. Note however, that the function for placing the user favors the lower right corner of the board (a potential flaw).
+	4. Once the user has been placed on the game board, the user is able to move around with the 'up,' 'down,' 'left,' and 'right' arrows to the left of the game board.
+		a. The user cannot move outside of the game board in either direction, and the game will detect this and flag it as a 'bad move,' subtracting additional points accordingly.
+
+What remains to be taken care of:
+	1. Currently, I have the "sense" data permanatly drawn onto the game board at the initialization of the game board (for debug purposes). I need to have the game only draw the "sense" data when the user enters a game square.
+	3. I currently do not track where the user has been (marking squares as having been visited)
+	4. There is no point system implemented yet. The game does not keep track of any points at all.
+	5. Arrows have not been implemented in any fashion.
+	6. Currently, all game objects are drawn on the board at game initialization. This means that all Wumpus, Treasure, and pits are visible from the beginning (for debugging purposes). This will need to change to the expected "only draw where the user has been" system.
+	7. I need to create a "drawStack" function of some kind that will draw the game objects in the correct order so that they lign up properly. That order is:
+        "Sense" Indicators
+        Player Character
+        Wumpus
+        Dead Wumpus - The image does not _have_ to change for a dead wumpus
+        Treasure
+        Pit
+        Floor Texture 
+	8. I also need to track which wumpus(s) are dead/alive
