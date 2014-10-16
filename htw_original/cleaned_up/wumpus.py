@@ -37,7 +37,8 @@ sys.path.append('../../../')
 
 try:
     from graphics import *
-except:
+except e:
+    print(e)
     print("Error: Need the library 'graphics.py' to run.")
     print("       Search online for it, and put it in this folder.")
 from random import randint
@@ -815,8 +816,12 @@ def move_handler(game_chr, direction, virtual_board, game_points, dead_wumpus_ls
     in_sqr = what_in_square(game_chr, virtual_board)
 
 
-    ## This sequentially checks if certain items are present in the square, then draws them in the correct order (pit, gold, wumpus).
-    ## The game does not undraw anything but the player sprite and the sense string, so board images will tend to accumulate. I'm unaware if that will tend to affect performance.
+    ## This sequentially checks if certain items are present in the square,
+    ## then draws them in the correct order (pit, gold, wumpus).
+    
+    ## The game does not undraw anything but the player sprite and the sense
+    ## string, so board images will tend to accumulate. I'm unaware if that
+    ## will tend to affect performance.
 
     if in_sqr[2]:
         Image(Point(virtual_board[game_chr[1]][game_chr[0]][2][0], virtual_board[game_chr[1]][game_chr[0]][2][1]), 'pit.gif').draw(MAIN_WINDOW)
@@ -1106,6 +1111,8 @@ def gameHandler():
         except: eof = True
     score_window.close()
 
-gameHandler()
+if __name__ == '__main__':
+    gameHandler()
+
 
 #btnSize()
