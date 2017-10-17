@@ -1,49 +1,61 @@
 from __future__ import print_function
 import random
 
+
 class Difficulties:
     Easy = "easy_diff"
     Medium = "medium_diff"
     Hard = "hard_diff"
 
 
-DIRECTION = {
-    'u': [-1, 0],
-    'd': [1, 0],
-    'l': [0, -1],
-    'r': [0, 1]
-}
+DIRECTION = {'u': [-1, 0], 'd': [1, 0], 'l': [0, -1], 'r': [0, 1]}
 
 
 class CellEntity(object):
     """CellEntity is for any object which has an x,y location on the board."""
+
     def __init__(self, location):
         self.location = location
 
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__, self.location)
 
+
 class GameItem(CellEntity):
     """Represents an item on the board which we the player interact with such
     as an item or adversary."""
-    def __init__(self, location, point_value, player_enter_callback=None, arrow_enter_callback=None):
+
+    def __init__(self,
+                 location,
+                 point_value,
+                 player_enter_callback=None,
+                 arrow_enter_callback=None):
         super().__init__(location)
         self.point_value = point_value
         self.arrow_enter_callback = arrow_enter_callback
         self.player_enter_callback = player_enter_callback
         self.visited = False
 
+
 class Player(CellEntity):
     """Player object."""
+
     def __init__(self, location):
         super().__init__(location)
+
 
 class Wumpus(GameItem):
     """Wumpus object. Wumpus *does* require both a player_enter_callback and an
     arrow_enter_callback for correct operation, though they may be set after
     construction if need be."""
-    def __init__(self, location, point_value=-1000, player_enter_callback=None, arrow_enter_callback=None):
-        super().__init__(location, point_value, player_enter_callback, arrow_enter_callback)
+
+    def __init__(self,
+                 location,
+                 point_value=-1000,
+                 player_enter_callback=None,
+                 arrow_enter_callback=None):
+        super().__init__(location, point_value, player_enter_callback,
+                         arrow_enter_callback)
         self.living = True
 
     def kill(self):
@@ -53,19 +65,24 @@ class Wumpus(GameItem):
             self.living = False
             self.arrow_enter_callback(self)
 
+
 class Pit(GameItem):
     """Pit object"""
+
     def __init__(self, location, point_value=-200, **kwargs):
         super().__init__(location, point_value, **kwargs)
 
+
 class Gold(GameItem):
     """Gold object"""
+
     def __init__(self, location, point_value, **kwargs):
         super().__init__(location, point_value, **kwargs)
 
 
 class GridCell(CellEntity):
     """Object represents the cells of a game grid."""
+
     def __init__(self, location):
         super().__init__(location)
         self.contents = []
@@ -73,12 +90,14 @@ class GridCell(CellEntity):
 
 class Board(object):
     """Object for the board. The variables"""
+
     def __init__(self, player, wumpii, golds, pits, difficulty="", size=6):
         self.difficulty = difficulty
         self.size = size
         self.sound = None
         self.points = 0
-        self.grid = [[GridCell([h, w]) for w in range(0, self.size)] for h in range(0, self.size)]
+        self.grid = [[GridCell([h, w]) for w in range(0, self.size)]
+                     for h in range(0, self.size)]
 
         self.player = player
         self.wumpii = wumpii
@@ -89,7 +108,9 @@ class Board(object):
         # entity we've been provided to have it's valid x,y coordinates set
         # already, so we just place them where they're to go. Validation of
         # acceptable locations for each game item is done in the game logic.
-        entities = [x for lst in [self.wumpii, self.golds, self.pits] for x in lst]
+        entities = [
+            x for lst in [self.wumpii, self.golds, self.pits] for x in lst
+        ]
         entities += [self.player]
         for ent in entities:
             y, x = ent.location
@@ -138,11 +159,7 @@ class Board(object):
         their current cell.'''
         y, x = location
         nearby = self.get_nearby(location)
-        senses = {
-            'glint': False,
-            'breeze': False,
-            'stench': False
-        }
+        senses = {'glint': False, 'breeze': False, 'stench': False}
         for _, v in nearby.items():
             if not v: continue
             for ent in v.contents:
@@ -154,6 +171,6 @@ class Board(object):
                     senses['breeze'] = True
         return senses
 
+
 if __name__ == '__main__':
     print(sample_random_points(5, 0, 10))
-

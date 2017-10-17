@@ -1,6 +1,6 @@
 import random
 
-from .wumpus import Player, Wumpus, Gold, Pit, Board, Difficulties
+from .model.wumpus import Player, Wumpus, Gold, Pit, Board, Difficulties
 
 GAME_SETTINGS = {
 	Difficulties.Easy: {

@@ -1,5 +1,6 @@
 
-from ..model import game_logic, wumpus
+from .. import game_logic
+from ..model import wumpus
 
 def summarize_contents(cell):
     rv = ""
