@@ -59,10 +59,16 @@ def NewGame(difficulty):
 
 	board = Board(player, wumpii, golds, pits, difficulty, settings['size'])
 
-	# Now that we have a board, we can add the correct "wumpus_kill" callbacks
-	# to our wumpii
+	# Now that we have a board, we can add the correct callbacks to our wumpii
 	for wumpus in wumpii:
 		wumpus.arrow_enter_callback = create_wumpus_kill(board)
+		wumpus.player_enter_callback = create_player_enter_wump(board)
+
+	# Additionally, we can add callbacks for when the player enters
+	for g in golds:
+		g.player_enter_callback = create_default_player_enter(board)
+	for p in pits:
+		p.player_enter_callback = create_default_player_enter(board)
 
 	return board
 
@@ -74,6 +80,27 @@ def create_wumpus_kill(board):
 			board.points += 200
 			board.sound = "SCREAM!"
 	return wumpus_kill
+
+def create_player_enter_wump(board):
+	def player_enter_wump(wumpus):
+		if wumpus.living:
+			board.add_points(wumpus.point_value)
+		if not (wumpus.living or wumpus.visited):
+			# If the player finds a dead wumpus for the first time, they get a
+			# points bonus of 50 points
+			board.add_points(50)
+		wumpus.visited = True
+
+def create_default_player_enter(board):
+	def default_player_enter(entity):
+		print("Entered the location!")
+		try:
+			if not entity.visited:
+				board.add_points(entity.point_value)
+				entity.visited = True
+		except Exception:
+			pass
+	return default_player_enter
 
 def sample_random_points(point_count, minimum, maximum):
 	"""Returns a list of random coordinate pairs.

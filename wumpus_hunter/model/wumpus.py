@@ -8,7 +8,16 @@ class Difficulties:
     Hard = "hard_diff"
 
 
-DIRECTION = {'u': [-1, 0], 'd': [1, 0], 'l': [0, -1], 'r': [0, 1]}
+DIRECTIONS = {
+    # 'U': (-1, 0),
+    # 'D': (1, 0),
+    # 'L': (0, -1),
+    # 'R': (0, 1),
+    'N': (0, -1),
+    'E': (1, 0),
+    'S': (0, 1),
+    'W': (-1, 0),
+}
 
 
 class CellEntity(object):
@@ -128,11 +137,32 @@ class Board(object):
         """ move entity to location. It is assumed that the entity.location
             attribute is not changed beforehand
         """
+        y, x = location
+        if not y in range(self.size) or not x in range(self.size):
+            return
         y, x = entity.location
         self.grid[y][x].contents.remove(entity)
         entity.location = location
         y, x = location
         self.grid[y][x].contents.append(entity)
+        for ent in self.grid[y][x].contents:
+            try:
+                if not ent.player_enter_callback is None:
+                    ent.player_enter_callback(ent)
+            except AttributeError:
+                pass
+
+    def traverse(self, entity, direction):
+        '''Move the provided entity in the direction provided. Directions are:
+            'N', 'S', 'E', 'W',
+        which stand for:
+            north, south, east, west
+            '''
+        direction = direction.upper()
+        dy, dx = DIRECTIONS[direction]
+        y, x = entity.location
+        ny, nx = dy+y, dx+x
+        return self.move(entity, (ny, nx))
 
     def get_nearby(self, location):
         deltas = {

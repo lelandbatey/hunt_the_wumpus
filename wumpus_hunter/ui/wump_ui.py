@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os.path
 import base64
-import random 
+import random
 import time
 import json
 import os
@@ -10,6 +10,7 @@ import os
 import sys
 sys.path.append('../')
 import graphics as gfx
+
 
 def get_image(image_path, force=False):
     """Loads a gif image as a base64 string.
@@ -21,7 +22,7 @@ def get_image(image_path, force=False):
     path_parts = os.path.split(image_path)
 
     if len(path_parts) < 2 and not force:
-        image_path = os.path.join(['images']+path_parts)
+        image_path = os.path.join(['images'] + path_parts)
 
     with open(image_path, 'r') as img:
         filestr = base64.encodestring(img.read())
@@ -47,8 +48,9 @@ def get_rect_intersect(my_rectangle, my_point):
     and test_pnt_x <= pnt_2x \
     and test_pnt_y >= pnt_1y \
     and test_pnt_y <= pnt_2y
-    
+
     return is_within
+
 
 def which_button(click, button_dict):
     """Checks which rectangle a point falls in for a dict of rectangles.
@@ -64,6 +66,7 @@ def which_button(click, button_dict):
     # like it could be confusing.
     return None
 
+
 def make_buttons(btn_sttings):
     """Converts a json-stle structure into dict of rectangles."""
     buttons = {}
@@ -73,20 +76,19 @@ def make_buttons(btn_sttings):
     return buttons
 
 
-
 class Window(object):
     """A re-usable window object.
 
     Since there's just a ton of different little variables that need to be set
     for a window to work properly, I figure I can easily defer all that into
     some configuration files, then just monitor which buttons get clicked.
-    
+
     """
-    
+
     def __init__(self, settings):
         if isinstance(settings, basestring):
-            settings = json.load(open(
-                os.path.join(['layout', settings+'.json'])))
+            settings = json.load(
+                open(os.path.join(['layout', settings + '.json'])))
         self.settings = settings
         self.window = gfx.GraphWin(self.settings['title'],
                                    self.settings['width'],
@@ -126,12 +128,9 @@ class Window(object):
         return button, failure
 
 
-
-
-
-
 class DifficultyWindow(object):
     """Controls getting the difficulty from the user."""
+
     def __init__(self):
         self.window = gfx.GraphWin("Choose the Difficulty", 400, 100)
         self.buttons = {}
@@ -143,9 +142,9 @@ class DifficultyWindow(object):
         # Saving these rectangles allows us to check if a click falls inside a
         # button later.
         buttons = {
-            'easy': gfx.Rectangle(gfx.Point(66, 36), gfx.Point(134, 64)), 
-            'medium' : gfx.Rectangle(gfx.Point(166, 36), gfx.Point(234, 64)),
-            'hard' : gfx.Rectangle(gfx.Point(266, 36), gfx.Point(334, 64))
+            'easy': gfx.Rectangle(gfx.Point(66, 36), gfx.Point(134, 64)),
+            'medium': gfx.Rectangle(gfx.Point(166, 36), gfx.Point(234, 64)),
+            'hard': gfx.Rectangle(gfx.Point(266, 36), gfx.Point(334, 64))
         }
         self.buttons = buttons
 
@@ -153,8 +152,9 @@ class DifficultyWindow(object):
         button_points = [[100, 50], [200, 50], [300, 50]]
         bnames = ["easybutton.gif", 'mediumbutton.gif', 'hardbutton.gif']
         for index, point in enumerate(button_points):
-            gfx.Image(gfx.Point(point),
-                      {'data':get_image(bnames[index])}).draw(self.window)
+            gfx.Image(gfx.Point(point), {
+                'data': get_image(bnames[index])
+            }).draw(self.window)
 
     def get_difficulty(self):
         """Waits for the user to click a difficulty.
@@ -182,11 +182,3 @@ class DifficultyWindow(object):
                     done = True
         self.window.close()
         return difficulty, failure
-
-
-
-
-        
-
-
-
