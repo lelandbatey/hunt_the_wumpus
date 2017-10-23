@@ -818,7 +818,15 @@ class Image(GraphicsObject):
         self.imageId = Image.idCount
         Image.idCount = Image.idCount + 1
         if len(pixmap) == 1: # file name provided
-            self.img = tk.PhotoImage(file=pixmap[0], master=_root)
+        ### BEGIN HTW CHANGES ###
+            try:
+                if isinstance(pixmap[0], dict):
+                    self.img = tk.PhotoImage(data=pixmap[0]['data'], master=_root)
+                else:
+                    self.img = tk.PhotoImage(file=pixmap[0], master=_root)
+            except Exception as e:
+                raise e
+        ### END HTW CHANGES ###
         else: # width and height provided
             width, height = pixmap
             self.img = tk.PhotoImage(master=_root, width=width, height=height)

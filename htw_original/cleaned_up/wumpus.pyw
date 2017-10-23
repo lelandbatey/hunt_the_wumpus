@@ -31,7 +31,7 @@ sys.path.append('../')
 sys.path.append('../../')
 sys.path.append('../../../')
 # Makes printing work correctly in Python 2.x
-from __future__ import print_function
+#from __future__ import print_function
 
 try:
     from graphics import *
