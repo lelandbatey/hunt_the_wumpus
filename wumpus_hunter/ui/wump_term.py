@@ -4,6 +4,8 @@ import time
 from .. import game_logic
 from ..model import wumpus
 
+from .term import sweargrid, display
+
 def summarize_contents(cell):
     rv = ""
     for ent in cell.contents:
@@ -17,17 +19,17 @@ def summarize_contents(cell):
             rv += "X"
     return rv
 
+def fmt_sense(sensations):
+    keys = sorted(list(sensations.keys()))
+    fmt = ""
+    for k in keys:
+        if sensations[k]:
+            fmt += k[0]
+        else:
+            fmt += '-'
+    return fmt
 
 def print_game(board):
-    def fmt_sense(sensations):
-        keys = sorted(list(sensations.keys()))
-        fmt = ""
-        for k in keys:
-            if sensations[k]:
-                fmt += k[0]
-            else:
-                fmt += '-'
-        return fmt
 
     for row in board.grid:
         print()
@@ -46,6 +48,24 @@ def demonstrate_move(board):
         board.move(board.player, (y, x+1))
         time.sleep(0.2)
 
+def update_and_refresh(board, tg):
+    grid_state = []
+    for row in board.grid:
+        row_strings = []
+        for cell in row:
+            senses = board.derive_sensations(cell.location)
+            row_strings.append(fmt_sense(senses))
+        grid_state.append(row_strings)
+    tg.draw_grid(grid_state)
+    time.sleep(2)
+    tg.get_input()
+    tg.exit()
+    time.sleep(0.1)
+
+def entrypoint():
+    board = game_logic.NewGame(wumpus.Difficulties.Easy)
+    terminal = sweargrid.TerminalGrid()
+    update_and_refresh(board, terminal)
 
 if __name__ == '__main__':
     board = game_logic.NewGame(wumpus.Difficulties.Easy)
