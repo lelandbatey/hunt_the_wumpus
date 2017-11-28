@@ -113,9 +113,12 @@ def build_contents(cell):
     x = ((1 + len(cell['contents'])) * cell['x']) + 1
     y = (2 * cell['y']) + 1
     rv = Glyph(x, y, cell['contents'])
-    # color cell white on black
-    rv.attr = get_colorpair('black-white')
-    # rv.strng = " {} ".format(<whatever>)
+
+    color = get_colorpair('black-white')
+    if "color" in cell and cell['color']:
+        color = get_colorpair(cell['color'])
+    rv.attr = color
+
     return rv
 
 
@@ -129,7 +132,6 @@ def assemble_glyphs(cell, width, height):
     # The x position on the curses field where the glyph will be drawn
     x = ((1 + cwidth) * cell['x']) + 1
     y = (2 * cell['y']) + 1
-
     contents_glyph = build_contents(cell)
 
     borders = [

@@ -73,12 +73,16 @@ def demonstrate_move(board):
 def update_and_refresh(board, tg):
     player = board.player
     dirty_cache = []
+    colors_cache = []
     for row in board.grid:
         row_strings = []
+        row_colors = []
         for cell in row:
             row_strings.append("   ")
+            row_colors.append('white-black')
         dirty_cache.append(row_strings)
-    refresh_board(board, tg, dirty_cache)
+        colors_cache.append(row_colors)
+    refresh_board(board, tg, dirty_cache, colors_cache)
     while True:
         try:
             key = tg.get_input()
@@ -86,12 +90,14 @@ def update_and_refresh(board, tg):
             break
         direction = KEYMAP.get(key)
         if direction:
+            y, x = player.location
+            colors_cache[y][x] = 'white-black'
             board.traverse(player, direction)
-            refresh_board(board, tg, dirty_cache)
+            refresh_board(board, tg, dirty_cache, colors_cache)
     tg.exit()
     time.sleep(0.1)
 
-def refresh_board(board, tg, dirty_cache):
+def refresh_board(board, tg, dirty_cache, colors_cache):
     player = board.player
     y, x = player.location
     for r, row in enumerate(board.grid):
@@ -99,7 +105,8 @@ def refresh_board(board, tg, dirty_cache):
             if cell.location == player.location:
                 senses = board.derive_sensations(cell.location)
                 dirty_cache[r][c] = fmt_sense(senses)
-    tg.draw_grid(dirty_cache)
+                colors_cache[r][c] = 'black-white'
+    tg.draw_grid(dirty_cache, colors_cache)
 
 def entrypoint():
     board = game_logic.NewGame(wumpus.Difficulties.Easy)

@@ -82,13 +82,16 @@ def extract_contents(stdscr):
     contents = [row.decode('utf-8').rstrip() for row in contents]
     return '\n'.join(contents)
 
-def grid_to_glyphs(grid):
+def grid_to_glyphs(grid, colors=None):
     glyphs = []
     height = len(grid)
     for y, row in enumerate(grid):
         width = len(row)
         for x, chars in enumerate(row):
-            cell = {'contents': chars, 'x': x, 'y': y}
+            color = 'black-white'
+            if colors is not None:
+                color = colors[y][x]
+            cell = {'contents': chars, 'x': x, 'y': y, 'color': color}
             cell_glyphs = display.assemble_glyphs(cell, width, height)
             glyphs += cell_glyphs
     return glyphs
@@ -195,13 +198,13 @@ class TerminalGrid(TerminalDrawer):
         # asyncronously
         previous_glyphs = None
         while run_event.is_set():
-            event, data = draw_queue.get()
+            event, data, *extra = draw_queue.get()
             if event == curses.KEY_RESIZE:
                 # terminal was resized. Refresh screen using old data
                 self.__draw_glyphs(stdscr, previous_glyphs)
             elif event == 'footer':
                 # set footer, but do not overwrite main grid state
-                self.footer = data
+                self.footer = data[0]
                 self.__draw_glyphs(stdscr, previous_glyphs)
             elif event == 'QUIT':
                 print('curses quitting')
@@ -211,7 +214,7 @@ class TerminalGrid(TerminalDrawer):
                 previous_glyphs = data
                 self.__draw_glyphs(stdscr, data)
             elif event == 'draw grid':
-                previous_glyphs = grid_to_glyphs(data)
+                previous_glyphs = grid_to_glyphs(data, *extra)
                 self.__draw_glyphs(stdscr, previous_glyphs)
             else:
                 print('unknown command ', event)
@@ -225,8 +228,8 @@ class TerminalGrid(TerminalDrawer):
         """
         return self.term_input.get()
 
-    def draw_grid(self, grid_state):
-        self._draw_queue.put(('draw grid', grid_state))
+    def draw_grid(self, grid_state, color_state=None):
+        self._draw_queue.put(('draw grid', grid_state, color_state))
 
     def __draw_glyphs(self, stdscr, glyphs, offset=(1,1)):
         '''draw_glyphs will draw all provided glyphs to stdscr. If offset (a y,
