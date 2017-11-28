@@ -23,6 +23,12 @@ GAME_SETTINGS = {
 	},
 }
 
+class Keys:
+	NORTH = 'N'
+	SOUTH = 'S'
+	WEST = 'W'
+	EAST = 'E'
+
 def NewGame(difficulty):
 	'''Returns a new Board object constructed with the state for the provided
 	difficulty.'''
@@ -93,7 +99,6 @@ def create_player_enter_wump(board):
 
 def create_default_player_enter(board):
 	def default_player_enter(entity):
-		print("Entered the location!")
 		try:
 			if not entity.visited:
 				board.add_points(entity.point_value)

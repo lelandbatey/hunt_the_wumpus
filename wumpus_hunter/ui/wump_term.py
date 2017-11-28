@@ -1,10 +1,32 @@
 
 import time
+import curses
 
 from .. import game_logic
 from ..model import wumpus
 
 from .term import sweargrid, display
+from ..game_logic import Keys
+
+
+KEYMAP = {
+    # arrow keys
+    curses.KEY_UP: Keys.NORTH,
+    curses.KEY_DOWN: Keys.SOUTH,
+    curses.KEY_LEFT: Keys.WEST,
+    curses.KEY_RIGHT: Keys.EAST,
+    # wasd
+    ord('w'): Keys.NORTH,
+    ord('s'): Keys.SOUTH,
+    ord('a'): Keys.WEST,
+    ord('d'): Keys.EAST,
+    # vim keybindings
+    ord('k'): Keys.NORTH,
+    ord('j'): Keys.SOUTH,
+    ord('h'): Keys.WEST,
+    ord('l'): Keys.EAST,
+}
+
 
 def summarize_contents(cell):
     rv = ""
@@ -49,18 +71,35 @@ def demonstrate_move(board):
         time.sleep(0.2)
 
 def update_and_refresh(board, tg):
-    grid_state = []
+    player = board.player
+    dirty_cache = []
     for row in board.grid:
         row_strings = []
         for cell in row:
-            senses = board.derive_sensations(cell.location)
-            row_strings.append(fmt_sense(senses))
-        grid_state.append(row_strings)
-    tg.draw_grid(grid_state)
-    time.sleep(2)
-    tg.get_input()
+            row_strings.append("   ")
+        dirty_cache.append(row_strings)
+    refresh_board(board, tg, dirty_cache)
+    while True:
+        try:
+            key = tg.get_input()
+        except KeyboardInterrupt:
+            break
+        direction = KEYMAP.get(key)
+        if direction:
+            board.traverse(player, direction)
+            refresh_board(board, tg, dirty_cache)
     tg.exit()
     time.sleep(0.1)
+
+def refresh_board(board, tg, dirty_cache):
+    player = board.player
+    y, x = player.location
+    for r, row in enumerate(board.grid):
+        for c, cell in enumerate(row):
+            if cell.location == player.location:
+                senses = board.derive_sensations(cell.location)
+                dirty_cache[r][c] = fmt_sense(senses)
+    tg.draw_grid(dirty_cache)
 
 def entrypoint():
     board = game_logic.NewGame(wumpus.Difficulties.Easy)

@@ -13,10 +13,10 @@ DIRECTIONS = {
     # 'D': (1, 0),
     # 'L': (0, -1),
     # 'R': (0, 1),
-    'N': (0, -1),
-    'E': (1, 0),
-    'S': (0, 1),
-    'W': (-1, 0),
+    'N': (-1, 0),
+    'S': (1, 0),
+    'W': (0, -1),
+    'E': (0, 1),
 }
 
 
@@ -105,7 +105,7 @@ class Board(object):
         self.size = size
         self.sound = None
         self.points = 0
-        self.grid = [[GridCell([h, w]) for w in range(0, self.size)]
+        self.grid = [[GridCell((h, w)) for w in range(0, self.size)]
                      for h in range(0, self.size)]
 
         self.player = player
@@ -133,7 +133,7 @@ class Board(object):
             for cell in row:
                 yield cell
 
-    def move(self, entity, location):
+    def move_to(self, entity, location):
         """ move entity to location. It is assumed that the entity.location
             attribute is not changed beforehand
         """
@@ -162,7 +162,7 @@ class Board(object):
         dy, dx = DIRECTIONS[direction]
         y, x = entity.location
         ny, nx = dy+y, dx+x
-        return self.move(entity, (ny, nx))
+        return self.move_to(entity, (ny, nx))
 
     def get_nearby(self, location):
         deltas = {
