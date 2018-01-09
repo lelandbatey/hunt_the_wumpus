@@ -245,6 +245,8 @@ class TerminalGrid(TerminalDrawer):
             stdscr.addstr(yy, xx, g.strng, g.attr)
         if self.footer:
             self.draw_footer_msg(stdscr)
+        # vv For when we need to drop debug info on screen vv
+        # stdscr.addstr(40, 120, str(curses.COLORS))
 
     def exit(self):
         self._run.clear()

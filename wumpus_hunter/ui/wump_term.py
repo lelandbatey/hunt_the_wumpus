@@ -1,4 +1,3 @@
-
 import time
 import curses
 
@@ -7,7 +6,6 @@ from ..model import wumpus
 
 from .term import sweargrid, display
 from ..game_logic import Keys
-
 
 KEYMAP = {
     # arrow keys
@@ -41,6 +39,7 @@ def summarize_contents(cell):
             rv += "X"
     return rv
 
+
 def fmt_sense(sensations):
     keys = sorted(list(sensations.keys()))
     fmt = ""
@@ -50,6 +49,7 @@ def fmt_sense(sensations):
         else:
             fmt += '-'
     return fmt
+
 
 def print_game(board):
 
@@ -63,12 +63,14 @@ def print_game(board):
         print()
     print("Score:", board.points)
 
+
 def demonstrate_move(board):
     for _ in range(10):
         print_game(board)
         y, x = board.player.location
-        board.move(board.player, (y, x+1))
+        board.move(board.player, (y, x + 1))
         time.sleep(0.2)
+
 
 def update_and_refresh(board, tg):
     player = board.player
@@ -97,6 +99,32 @@ def update_and_refresh(board, tg):
     tg.exit()
     time.sleep(0.1)
 
+
+def get_cell_color(cell, player):
+    default_color = 'white-black'
+    color = default_color
+    color_dict = {
+        wumpus.Wumpus: 'black-green',
+        wumpus.Pit: 'black-red',
+        wumpus.Gold: 'black-yellow',
+    }
+    if cell.location == player.location:
+        # player is present. Alter the colors
+        color = 'black-white'
+        # player color is white background. Set letter text to entity color
+        color_dict = {
+            wumpus.Wumpus: 'green-white',
+            wumpus.Pit: 'red-white',
+            wumpus.Gold: 'yellow-white',
+        }
+    for entity in cell.contents:
+        if not isinstance(entity, wumpus.Player):
+            # we assume only one gold/pit/wumpus entity per cell
+            if entity.visited:
+                color = color_dict[entity.__class__]
+    return color
+
+
 def refresh_board(board, tg, dirty_cache, colors_cache):
     player = board.player
     y, x = player.location
@@ -105,16 +133,17 @@ def refresh_board(board, tg, dirty_cache, colors_cache):
             if cell.location == player.location:
                 senses = board.derive_sensations(cell.location)
                 dirty_cache[r][c] = fmt_sense(senses)
-                colors_cache[r][c] = 'black-white'
+            colors_cache[r][c] = get_cell_color(cell, player)
     tg.draw_grid(dirty_cache, colors_cache)
+
 
 def entrypoint():
     board = game_logic.NewGame(wumpus.Difficulties.Easy)
     terminal = sweargrid.TerminalGrid()
     update_and_refresh(board, terminal)
 
+
 if __name__ == '__main__':
     board = game_logic.NewGame(wumpus.Difficulties.Easy)
     # print_game(board)
     demonstrate_move(board)
-

@@ -96,6 +96,7 @@ def create_player_enter_wump(board):
 			# points bonus of 50 points
 			board.add_points(50)
 		wumpus.visited = True
+	return player_enter_wump
 
 def create_default_player_enter(board):
 	def default_player_enter(entity):
